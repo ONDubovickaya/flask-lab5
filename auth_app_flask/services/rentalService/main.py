@@ -4,7 +4,7 @@ import json
 import datetime
 
 import jwt
-from jwt import PyJWKClient
+#from jwt import PyJWKClient
 
 import os
 from peewee import *
