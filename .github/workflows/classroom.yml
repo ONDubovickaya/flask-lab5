@@ -44,6 +44,8 @@ jobs:
       - name: Run containers
         timeout-minutes: 10
         run: |
+          pip install PyJWT
+          
           docker-compose up -d rental-service-lab5
           docker-compose up -d payments-service-lab5
           docker-compose up -d cars-service-lab5
