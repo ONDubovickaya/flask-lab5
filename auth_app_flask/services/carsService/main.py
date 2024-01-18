@@ -7,7 +7,6 @@ from flask import Flask, request, make_response, jsonify, Response
 import requests 
 import datetime 
 import json 
-import os 
   
 from authlib.integrations.flask_client import OAuth 
 import jwt
@@ -148,7 +147,7 @@ def check_jwt(bearer):
             jwt_token,
             signing_key,
             algorithms=["RS256"],
-            audience="http://127.0.0.1:8080",
+            audience="http://127.0.0.1:8070",
             options={"verify_exp": False}
         )
         return data["name"]
