@@ -4,6 +4,7 @@ import json
 import datetime
 
 import jwt
+from jwt import PyJWKClient
 
 import os
 from peewee import *
@@ -54,7 +55,7 @@ def create_tables():
 ####### описание маршрутов #######
 app = Flask(__name__)
 
-jwks = jwt.PyJWKClient("https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json")
+jwks = PyJWKClient("https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json")
 
 def check_jwt(bearer):
     try:
@@ -64,7 +65,7 @@ def check_jwt(bearer):
             jwt_token,
             signing_key.key,
             algorithms=["RS256"],
-            audience="http:127.0.0.1:8080",
+            audience="http://127.0.0.1:8080",
             options={"verify_exp": False}
         )
         return data["name"]
