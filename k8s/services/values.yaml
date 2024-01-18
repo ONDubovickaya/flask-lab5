@@ -2,7 +2,7 @@ rental:
   service:
     type: ClusterIP
     port: 8060
-    image: ondubovickaya/rental-service:latest
+    image: ondubovickaya/rental-service-lab5:latest
     env:     
       DATA_BASE_PORT: 5432
       DATA_BASE_NAME: postgres
@@ -14,7 +14,7 @@ payments:
   service:
     type: ClusterIP
     port: 8050
-    image: ondubovickaya/payments-service:latest
+    image: ondubovickaya/payments-service-lab5:latest
     env:
       DATA_BASE_PORT: 5432
       DATA_BASE_NAME: postgres
@@ -26,7 +26,7 @@ cars:
   service:
     type: ClusterIP
     port: 8070
-    image: ondubovickaya/cars-service:latest
+    image: ondubovickaya/cars-service-lab5:latest
     env:
       DATA_BASE_PORT: 5432
       DATA_BASE_NAME: postgres
@@ -39,7 +39,7 @@ gateway:
     type: NodePort
     port: 8080
     nodePort: 30000
-    image: ondubovickaya/api-gateway:latest
+    image: ondubovickaya/api-gateway-lab5:latest
     isGateway: true
     env:
       CARS_SERVICE_HOST: cars.ondubovickaya.svc.cluster.local
