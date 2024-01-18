@@ -23,7 +23,7 @@ services:
       retries: 2
 
   cars-service-lab5:
-    build: app_flask/services/carsService
+    build: auth_app_flask/services/carsService
     image: ondubovickaya/cars-service-lab5
     container_name: cars-service-lab5
     depends_on:
@@ -41,7 +41,7 @@ services:
       - internal
 
   payments-service-lab5:
-    build: app_flask/services/paymentService
+    build: auth_app_flask/services/paymentService
     image: ondubovickaya/payments-service-lab5
     container_name: payments-service-lab5
     depends_on:
@@ -59,7 +59,7 @@ services:
       - internal
 
   rental-service-lab5:
-    build: app_flask/services/rentalService
+    build: auth_app_flask/services/rentalService
     image: ondubovickaya/renatl-service-lab5
     container_name: rental-service-lab5
     depends_on:
@@ -77,7 +77,7 @@ services:
       - internal
 
   api-gateway-lab5:
-    build: app_flask/services/gatewayService
+    build: auth_app_flask/services/gatewayService
     image: ondubovickaya/api-gateway-lab5
     container_name: api-gateway-lab5
     depends_on:
