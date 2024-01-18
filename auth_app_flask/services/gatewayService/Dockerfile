@@ -1,6 +1,6 @@
 FROM python:3.9
 
-WORKDIR /app_flask
+WORKDIR /auth_app_flask
 
 COPY requirements.txt .
 
