@@ -1,10 +1,17 @@
-from flask import Flask, request, make_response, jsonify
 import uuid
 import json
 
-import os
 from peewee import *
 from peewee import Model, PostgresqlDatabase
+
+from flask import Flask, request, make_response, jsonify, Response 
+import requests 
+import datetime 
+import json 
+import os 
+  
+from authlib.integrations.flask_client import OAuth 
+import jwt
 
 ####### БД #######
 pg_db = PostgresqlDatabase(
@@ -43,6 +50,91 @@ def create_tables():
 ####### описание сервиса #######
 app = Flask(__name__)
 
+# подключение OAuth
+app.config['JSON_AS_ASCII'] = False
+#app.secret_key = os.environ['APP_SECRET_KEY']
+"""
+oauth = OAuth(app)
+oauth.register(
+    "auth0",
+    client_id=os.environ['AUTH0_CLIENT_ID'],
+    client_secret=os.environ['AUTH0_CLIENT_SECRET'],
+    client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f"https://{os.environ['AUTH0_DOMAIN']}/.well-known/openid-configuration",
+)
+
+
+def validation(id_token):
+    domain = os.environ['AUTH0_DOMAIN']
+    client_id = os.environ['AUTH0_CLIENT_ID']
+
+    jwks_url = 'https://{}/.well-known/jwks.json'.format(domain)
+    issuer = 'https://{}/'.format(domain)
+
+    try:
+        sv = AsymmetricSignatureVerifier(jwks_url)
+        tv = TokenVerifier(signature_verifier=sv, issuer=issuer, audience=client_id)
+        tv.verify(id_token)
+        return True
+    except:
+        return False 
+"""
+
+oauth = OAuth(app)
+oauth.register(
+    "auth0",
+    client_id='2tzOe8ODXk00x0wmzA8RoWhSR552QD8f',
+    client_secret='YZIJUrFjzqlozGrRLT7eGx3gjrBjGVW1sJ8jcCcwE1wswL4d8rN42QpfwpfPQC6o',
+    client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f"https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/openid-configuration",
+)
+"""
+jwks = PyJWKClient("https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json")
+
+def check_jwt(bearer):
+    try:
+        jwt_token = bearer.split()[1]
+        signing_key = jwks.get_signing_key_from_jwt(jwt_token)
+        data = jwt.decode(
+            jwt_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience="http://localhost:8080",
+            options={"verify_exp": False}
+        )
+        return data["name"]
+    except:
+        return False
+"""
+def get_signing_key(jwt_token):
+    jwks_url = "https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json"
+    response = requests.get(jwks_url)
+    jwks = response.json()
+    header = jwt.get_unverified_header(jwt_token)
+    kid = header.get("kid")
+    
+    for key in jwks["keys"]:
+        if key["kid"] == kid:
+            return jwt.algorithms.RSAAlgorithm.from_jwk(key)
+    
+    raise ValueError("No matching key found in JWKS")
+
+def check_jwt(bearer):
+    try:
+        jwt_token = bearer.split()[1]
+        signing_key = get_signing_key(jwt_token)
+        data = jwt.decode(
+            jwt_token,
+            signing_key,
+            algorithms=["RS256"],
+            audience="http://127.0.0.1:8080",
+            options={"verify_exp": False}
+        )
+        return data["name"]
+    except:
+        return False
+
+
 #пустой маршрут
 @app.route("/")
 def service():
@@ -51,6 +143,16 @@ def service():
 #маршрут get
 @app.route('/api/v1/payment/<string:paymentUid>', methods=['GET'])
 def get_payment(paymentUid):
+    bearer = request.headers.get('Authorization') 
+  
+    if bearer == None: 
+        return Response(status=401) 
+  
+    client = check_jwt(bearer) 
+  
+    if not(client): 
+        return Response(status=401)
+    
     try:
         payment = PaymentModel.select().where(PaymentModel.payment_uid == paymentUid).get().to_dict()
 
@@ -81,6 +183,16 @@ def validate_body(body):
 
 @app.route('/api/v1/payment', methods=['POST'])
 def post_payment():
+    bearer = request.headers.get('Authorization') 
+  
+    if bearer == None: 
+        return Response(status=401) 
+  
+    client = check_jwt(bearer) 
+  
+    if not(client): 
+        return Response(status=401)
+        
     body, errors = validate_body(request.get_data())
 
     if len(errors) > 0:
@@ -102,6 +214,16 @@ def post_payment():
 #маршрут delete
 @app.route('/api/v1/payment/<string:paymentUid>', methods=['DELETE'])
 def delete_payment(paymentUid):
+    bearer = request.headers.get('Authorization') 
+  
+    if bearer == None: 
+        return Response(status=401) 
+  
+    client = check_jwt(bearer) 
+  
+    if not(client): 
+        return Response(status=401)
+        
     try:
         payment = PaymentModel.select().where(PaymentModel.payment_uid == paymentUid).get()
         
