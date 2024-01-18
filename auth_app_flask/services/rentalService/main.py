@@ -94,7 +94,7 @@ def check_jwt(bearer):
             jwt_token,
             signing_key,
             algorithms=["RS256"],
-            audience="http://127.0.0.1:8080",
+            audience="http://127.0.0.1:8060",
             options={"verify_exp": False}
         )
         return data["name"]
@@ -109,6 +109,16 @@ def service():
 #маршрут get
 @app.route('/api/v1/rental/<string:rentalUid>', methods=['GET'])
 def get_rental(rentalUid):
+    bearer = request.headers.get('Authorization')
+    
+    if bearer == None:
+        return Response(status=401)
+    
+    client = check_jwt(bearer)
+
+    if not(client):
+        return Response(status=401)
+        
     try:
         rental = RentalModel.select().where(RentalModel.rental_uid == rentalUid).get().to_dict()
 
@@ -221,6 +231,16 @@ def post_rental():
 #маршрут post finish
 @app.route('/api/v1/rental/<string:rentalUid>/finish', methods=['POST'])
 def post_rental_finish(rentalUid):
+    bearer = request.headers.get('Authorization')
+    
+    if bearer == None:
+        return Response(status=401)
+    
+    client = check_jwt(bearer)
+
+    if not(client):
+        return Response(status=401)
+        
     try:
         rental = RentalModel.select().where(RentalModel.rental_uid == rentalUid).get()
         
@@ -249,6 +269,16 @@ def post_rental_finish(rentalUid):
 #маршрут delete
 @app.route('/api/v1/rental/<string:rentalUid>', methods=['DELETE'])
 def delete_rental(rentalUid):
+    bearer = request.headers.get('Authorization')
+    
+    if bearer == None:
+        return Response(status=401)
+    
+    client = check_jwt(bearer)
+
+    if not(client):
+        return Response(status=401)
+        
     try:
         rental = RentalModel.select().where(RentalModel.rental_uid == rentalUid).get()
         
