@@ -162,15 +162,15 @@ def service():
 #маршрут get
 @app.route('/api/v1/cars/<string:carUid>', methods=['GET'])
 def get_car(carUid):
-     bearer = request.headers.get('Authorization') 
+    bearer = request.headers.get('Authorization') 
   
-     if bearer == None: 
-         return Response(status=401) 
+    if bearer == None: 
+        return Response(status=401) 
   
-     client = check_jwt(bearer) 
+    client = check_jwt(bearer) 
   
-     if not(client): 
-         return Response(status=401)
+    if not(client): 
+        return Response(status=401)
          
     try:
         car = CarsModel.select().where(CarsModel.car_uid == carUid).get().to_dict()
@@ -231,13 +231,13 @@ def validate_args(args):
 def get_cars():
     bearer = request.headers.get('Authorization') 
   
-     if bearer == None: 
-         return Response(status=401) 
+    if bearer == None: 
+        return Response(status=401) 
   
-     client = check_jwt(bearer) 
+    client = check_jwt(bearer) 
   
-     if not(client): 
-         return Response(status=401)
+    if not(client): 
+        return Response(status=401)
          
     page, size, show_all, errors = validate_args(request.args)
 
@@ -267,13 +267,13 @@ def get_cars():
 def post_car_order(carUid):
     bearer = request.headers.get('Authorization') 
   
-     if bearer == None: 
-         return Response(status=401) 
+    if bearer == None: 
+        return Response(status=401) 
   
-     client = check_jwt(bearer) 
+    client = check_jwt(bearer) 
   
-     if not(client): 
-         return Response(status=401)
+    if not(client): 
+        return Response(status=401)
          
     try:
         car = CarsModel.select().where(CarsModel.car_uid == carUid).get()
@@ -305,13 +305,13 @@ def post_car_order(carUid):
 def delete_car_order(carUid):
     bearer = request.headers.get('Authorization') 
   
-     if bearer == None: 
-         return Response(status=401) 
+    if bearer == None: 
+        return Response(status=401) 
   
-     client = check_jwt(bearer) 
+    client = check_jwt(bearer) 
   
-     if not(client): 
-         return Response(status=401)
+    if not(client): 
+        return Response(status=401)
          
     try:
         car = CarsModel.select().where(CarsModel.car_uid == carUid).get()
