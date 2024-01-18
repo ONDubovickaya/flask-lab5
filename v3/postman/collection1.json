@@ -1,0 +1,413 @@
+{
+	"info": {
+		"_postman_id": "653d0b56-5a71-4a23-bcb7-c5db6a000ded",
+		"name": "[rsoi][lab5] Car Rental System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "976707"
+	},
+	"item": [
+		{
+			"name": "Gateway API",
+			"item": [
+				{
+					"name": "[auth] Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить токен\", () => {",
+									"    pm.response.to.have.status(200)",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");",
+									"",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.access_token).not.be.empty",
+									"    pm.collectionVariables.set(\"authorizationToken\", response.access_token)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "openid",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{clientId}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{clientSecret}}",
+									"type": "text"
+								},
+								{
+									"key": "audience",
+									"value": "{{identityProviderUrl}}/api/v2/",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityProviderUrl}}/oauth/token",
+							"host": [
+								"{{identityProviderUrl}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[unauthorize] Получить список всех доступных для бронирования автомобилей",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить список всех доступных для бронирования автомобилей\", () => {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{serviceUrl}}/api/v1/cars?page=1&size=10&showAll=false",
+							"host": [
+								"{{serviceUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cars"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "showAll",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[unauthorize] Забронировать автомобиль",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Забронировать автомобиль\", () => {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"carUid\": \"{{carUid}}\",\n    \"dateFrom\": \"2021-10-08\",\n    \"dateTo\": \"2021-10-11\"\n}"
+						},
+						"url": {
+							"raw": "{{serviceUrl}}/api/v1/rental",
+							"host": [
+								"{{serviceUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rental"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[unauthorize] Информация по конкретной аренде пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получение информации по конкретной аренде пользователя\", () => {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{serviceUrl}}/api/v1/rental/:rentalUid",
+							"host": [
+								"{{serviceUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rental",
+								":rentalUid"
+							],
+							"variable": [
+								{
+									"key": "rentalUid",
+									"value": "{{rentalUid}}",
+									"description": "UUID аренды"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[unauthorize] Получить информацию о всех арендах пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получение информации по конкретной аренде пользователя\", () => {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{serviceUrl}}/api/v1/rental",
+							"host": [
+								"{{serviceUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rental"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[unauthorize] Завершение аренды автомобиля",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Аренда отменена\", () => {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{serviceUrl}}/api/v1/rental/:rentalUid/finish",
+							"host": [
+								"{{serviceUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rental",
+								":rentalUid",
+								"finish"
+							],
+							"variable": [
+								{
+									"key": "rentalUid",
+									"value": "{{rentalUid}}",
+									"description": "UUID аренды"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[success] Завершение аренды автомобиля",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Аренда отменена\", () => {",
+									"    pm.response.to.have.status(204)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorizationToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{serviceUrl}}/api/v1/rental/:rentalUid/finish",
+							"host": [
+								"{{serviceUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rental",
+								":rentalUid",
+								"finish"
+							],
+							"variable": [
+								{
+									"key": "rentalUid",
+									"value": "{{rentalUid}}",
+									"description": "UUID аренды"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.collectionVariables.set(\"carUid\", \"109b42f3-198d-4c89-9276-a7520a7120ab\")"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "serviceUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "carUid",
+			"value": ""
+		},
+		{
+			"key": "rentalUid",
+			"value": ""
+		},
+		{
+			"key": "rentalPrice",
+			"value": ""
+		},
+		{
+			"key": "dateFrom",
+			"value": ""
+		},
+		{
+			"key": "dateTo",
+			"value": ""
+		},
+		{
+			"key": "authorizationToken",
+			"value": ""
+		}
+	]
+}
