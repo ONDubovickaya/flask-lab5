@@ -55,6 +55,7 @@ def create_tables():
 ####### описание маршрутов #######
 app = Flask(__name__)
 
+"""
 jwks = PyJWKClient("https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json")
 
 def check_jwt(bearer):
@@ -64,6 +65,34 @@ def check_jwt(bearer):
         data = jwt.decode(
             jwt_token,
             signing_key.key,
+            algorithms=["RS256"],
+            audience="http://127.0.0.1:8080",
+            options={"verify_exp": False}
+        )
+        return data["name"]
+    except:
+        return False
+"""
+def get_signing_key(jwt_token):
+    jwks_url = "https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json"
+    response = requests.get(jwks_url)
+    jwks = response.json()
+    header = jwt.get_unverified_header(jwt_token)
+    kid = header.get("kid")
+    
+    for key in jwks["keys"]:
+        if key["kid"] == kid:
+            return jwt.algorithms.RSAAlgorithm.from_jwk(key)
+    
+    raise ValueError("No matching key found in JWKS")
+
+def check_jwt(bearer):
+    try:
+        jwt_token = bearer.split()[1]
+        signing_key = get_signing_key(jwt_token)
+        data = jwt.decode(
+            jwt_token,
+            signing_key,
             algorithms=["RS256"],
             audience="http://127.0.0.1:8080",
             options={"verify_exp": False}
