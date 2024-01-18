@@ -1,8 +1,16 @@
-from flask import Flask, request, make_response, jsonify
+#from flask import Flask, request, make_response, jsonify
 
 import os
 from peewee import *
 from peewee import Model, PostgresqlDatabase
+from flask import Flask, request, make_response, jsonify, Response 
+import requests 
+import datetime 
+import json 
+import os 
+  
+from authlib.integrations.flask_client import OAuth 
+import jwt
 
 ####### БД #######
 pg_db = PostgresqlDatabase(
@@ -63,6 +71,90 @@ def create_tables():
 ####### описание маршрутов #######
 app = Flask(__name__)
 
+# подключение OAuth
+app.config['JSON_AS_ASCII'] = False
+#app.secret_key = os.environ['APP_SECRET_KEY']
+"""
+oauth = OAuth(app)
+oauth.register(
+    "auth0",
+    client_id=os.environ['AUTH0_CLIENT_ID'],
+    client_secret=os.environ['AUTH0_CLIENT_SECRET'],
+    client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f"https://{os.environ['AUTH0_DOMAIN']}/.well-known/openid-configuration",
+)
+
+
+def validation(id_token):
+    domain = os.environ['AUTH0_DOMAIN']
+    client_id = os.environ['AUTH0_CLIENT_ID']
+
+    jwks_url = 'https://{}/.well-known/jwks.json'.format(domain)
+    issuer = 'https://{}/'.format(domain)
+
+    try:
+        sv = AsymmetricSignatureVerifier(jwks_url)
+        tv = TokenVerifier(signature_verifier=sv, issuer=issuer, audience=client_id)
+        tv.verify(id_token)
+        return True
+    except:
+        return False 
+"""
+
+oauth = OAuth(app)
+oauth.register(
+    "auth0",
+    client_id='2tzOe8ODXk00x0wmzA8RoWhSR552QD8f',
+    client_secret='YZIJUrFjzqlozGrRLT7eGx3gjrBjGVW1sJ8jcCcwE1wswL4d8rN42QpfwpfPQC6o',
+    client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f"https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/openid-configuration",
+)
+"""
+jwks = PyJWKClient("https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json")
+
+def check_jwt(bearer):
+    try:
+        jwt_token = bearer.split()[1]
+        signing_key = jwks.get_signing_key_from_jwt(jwt_token)
+        data = jwt.decode(
+            jwt_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience="http://localhost:8080",
+            options={"verify_exp": False}
+        )
+        return data["name"]
+    except:
+        return False
+"""
+def get_signing_key(jwt_token):
+    jwks_url = "https://dev-268y6str0e3mrg1n.us.auth0.com/.well-known/jwks.json"
+    response = requests.get(jwks_url)
+    jwks = response.json()
+    header = jwt.get_unverified_header(jwt_token)
+    kid = header.get("kid")
+    
+    for key in jwks["keys"]:
+        if key["kid"] == kid:
+            return jwt.algorithms.RSAAlgorithm.from_jwk(key)
+    
+    raise ValueError("No matching key found in JWKS")
+
+def check_jwt(bearer):
+    try:
+        jwt_token = bearer.split()[1]
+        signing_key = get_signing_key(jwt_token)
+        data = jwt.decode(
+            jwt_token,
+            signing_key,
+            algorithms=["RS256"],
+            audience="http://127.0.0.1:8080",
+            options={"verify_exp": False}
+        )
+        return data["name"]
+    except:
+        return False
+
 #пустой маршрут
 @app.route("/")
 def service():
@@ -71,6 +163,16 @@ def service():
 #маршрут get
 @app.route('/api/v1/cars/<string:carUid>', methods=['GET'])
 def get_car(carUid):
+     bearer = request.headers.get('Authorization') 
+  
+     if bearer == None: 
+         return Response(status=401) 
+  
+     client = check_jwt(bearer) 
+  
+     if not(client): 
+         return Response(status=401)
+         
     try:
         car = CarsModel.select().where(CarsModel.car_uid == carUid).get().to_dict()
 
@@ -128,6 +230,16 @@ def validate_args(args):
 
 @app.route('/api/v1/cars', methods=['GET'])
 def get_cars():
+    bearer = request.headers.get('Authorization') 
+  
+     if bearer == None: 
+         return Response(status=401) 
+  
+     client = check_jwt(bearer) 
+  
+     if not(client): 
+         return Response(status=401)
+         
     page, size, show_all, errors = validate_args(request.args)
 
     if len(errors) > 0:
@@ -154,6 +266,16 @@ def get_cars():
 #маршрут post
 @app.route('/api/v1/cars/<string:carUid>/order', methods=['POST'])
 def post_car_order(carUid):
+    bearer = request.headers.get('Authorization') 
+  
+     if bearer == None: 
+         return Response(status=401) 
+  
+     client = check_jwt(bearer) 
+  
+     if not(client): 
+         return Response(status=401)
+         
     try:
         car = CarsModel.select().where(CarsModel.car_uid == carUid).get()
         
@@ -182,6 +304,16 @@ def post_car_order(carUid):
 #маршрут delete
 @app.route('/api/v1/cars/<string:carUid>/order', methods=['DELETE'])
 def delete_car_order(carUid):
+    bearer = request.headers.get('Authorization') 
+  
+     if bearer == None: 
+         return Response(status=401) 
+  
+     client = check_jwt(bearer) 
+  
+     if not(client): 
+         return Response(status=401)
+         
     try:
         car = CarsModel.select().where(CarsModel.car_uid == carUid).get()
         
