@@ -147,7 +147,7 @@ def check_jwt(bearer):
             jwt_token,
             signing_key,
             algorithms=["RS256"],
-            audience="http://127.0.0.1:8070",
+            audience="https://dev-268y6str0e3mrg1n.us.auth0.com/api/v2/",
             options={"verify_exp": False}
         )
         return data["name"]
