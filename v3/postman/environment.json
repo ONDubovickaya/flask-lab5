@@ -1,35 +1,35 @@
 {
   "id": "acc90f86-88ad-444e-924e-6f48f6ee7711",
-  "name": "[rsoi][lab5] Flight Service",
+  "name": "[rsoi][lab5] Cars Service",
   "values": [
     {
       "key": "serviceUrl",
-      "value": "",
+      "value": "http://localhost:8080",
       "enabled": true
     },
     {
       "key": "identityProviderUrl",
-      "value": "",
+      "value": "https://dev-268y6str0e3mrg1n.us.auth0.com",
       "enabled": true
     },
     {
       "key": "username",
-      "value": "",
+      "value": "elena.romanova.1999.777@gmail.com",
       "enabled": true
     },
     {
       "key": "password",
-      "value": "",
+      "value": "99LeNa043roMA77",
       "enabled": true
     },
     {
       "key": "clientId",
-      "value": "",
+      "value": "2tzOe8ODXk00x0wmzA8RoWhSR552QD8f",
       "enabled": true
     },
     {
       "key": "clientSecret",
-      "value": "",
+      "value": "YZIJUrFjzqlozGrRLT7eGx3gjrBjGVW1sJ8jcCcwE1wswL4d8rN42QpfwpfPQC6o",
       "enabled": true
     }
   ],
