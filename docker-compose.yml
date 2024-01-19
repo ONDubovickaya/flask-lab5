@@ -60,7 +60,7 @@ services:
 
   rental-service-lab5:
     build: auth_app_flask/services/rentalService
-    image: ondubovickaya/renatl-service-lab5
+    image: ondubovickaya/renatal-service-lab5
     container_name: rental-service-lab5
     depends_on:
       postgres:
