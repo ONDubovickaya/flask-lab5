@@ -71,7 +71,7 @@ jobs:
         uses: matt-ball/newman-action@master
         with:
           # TODO insert your variant
-          collection: v3/postman/collection1.json
+          collection: v3/postman/collection.json
           environment: v3/postman/environment.json
           delayRequest: 100
           reporters: '[ "cli" ]'
